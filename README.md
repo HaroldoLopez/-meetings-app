@@ -1,66 +1,121 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## About this proyect
 
-## About Laravel
+This application is a technical test for scheduling meetings. It was developed in Laravel and PHP, creating a REST API for its better implementation and testing.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Testing application
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The application has different endpoints to test, an included file is a Postman collection called 'Meeting collection.postman_collection.json' for your testing. The endpoints are described below:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Meetings
 
-## Learning Laravel
+### Create a Meeting (Only for tests)
+- **Route**: /meetings
+- **HTTP Method**: POST
+- **Controller**: MeetingController@store
+- **Description**: Create a new meeting.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### List Meetings  (Only for tests)
+- **Route**: /meetings
+- **HTTP Method**: GET
+- **Controller**: MeetingController@index
+- **Description**: Get a list of meetings.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Delete a Meeting  (Only for tests)
+- **Route**: /meetings/{id}
+- **HTTP Method**: DELETE
+- **Controller**: MeetingController@destroy
+- **Description**: Delete a meeting by its ID.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Book a Meeting (This is the endpoint where the required function for the technical test is included)
+- **Route**: /meetings/booking
+- **HTTP Method**: POST
+- **Controller**: MeetingController@booking
+- **Description**: Book a meeting.
 
-## Laravel Sponsors
+## Users
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### Create a User
+- **Route**: /users
+- **HTTP Method**: POST
+- **Controller**: UserController@store
+- **Description**: Create a new user.
 
-### Premium Partners
+### List Users
+- **Route**: /users
+- **HTTP Method**: GET
+- **Controller**: UserController@index
+- **Description**: Get a list of users.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+### Get User by ID
+- **Route**: /users/{id}
+- **HTTP Method**: GET
+- **Controller**: UserController@show
+- **Description**: Get user details by ID.
 
-## Contributing
+### Update User
+- **Route**: /users/{id}
+- **HTTP Method**: PUT
+- **Controller**: UserController@update
+- **Description**: Update user information by ID.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Delete User
+- **Route**: /users/{id}
+- **HTTP Method**: DELETE
+- **Controller**: UserController@destroy
+- **Description**: Delete user by ID.
 
-## Code of Conduct
+## Solving test
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+An endpoint was created to visualize the result of the function; you should include the following body parameters for example:
 
-## Security Vulnerabilities
+```
+{
+  "meeting_name":"meetingName",
+  "start_time":"2023-09-10 11:00:00",
+  "end_time":"2023-09-11 08:30:00",
+  "users":[1,2]
+}
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Within the endpoint's controller, a function called 'booking' was included, which calls a service named 'MeetingService' where the function for the technical test named 'scheduleMeeting' exists. This function includes another function called 'overlappingMeetings' that performs the validations discussed for scheduling meetings, resolving meetings scheduled within a user-defined time frame and user assignments.
 
-## License
+```
+public static function overlappingMeetings($startDateTime, $endDateTime, $userId) {
+    $overlappingMeetings = DB::table('meetings as m')
+        ->where('m.user_id', $userId)
+        ->where(function ($query) use ($startDateTime, $endDateTime) {
+            $query->whereBetween('m.start_time', [$startDateTime, $endDateTime])
+                ->whereBetween('m.end_time', [$startDateTime, $endDateTime]);
+        })
+        ->orWhere(function ($query) use ($startDateTime, $endDateTime) {
+            $query->where('m.start_time', '<', $startDateTime)
+                ->where('m.end_time', '<=', $endDateTime)
+                ->where('m.end_time', '>=', $startDateTime);
+        })
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+        ->orWhere(function ($query) use ($startDateTime, $endDateTime) {
+            $query->where('m.start_time', '>=', $startDateTime)
+                ->where('m.end_time', '>', $endDateTime)
+                ->where('m.start_time', '<', $endDateTime)
+                ->where('m.start_time', '>', $startDateTime);
+        })
+
+        ->orWhere(function ($query) use ($startDateTime, $endDateTime) {
+            $query->where('m.start_time', '<', $startDateTime)
+                ->where('m.end_time', '>', $endDateTime);
+        })->get();
+
+    return $overlappingMeetings;
+}
+```
+
+The validations that were included are:
+
+* The user-entered end date cannot be earlier than the user-entered start date.
+* If there are one or more meetings already scheduled within the date range.
+* If there is a meeting that starts before the initial date but ends within the specified date range.
+* If there is a meeting that starts within the specified date range but ends after the user-indicated end date.
+* If there is already a meeting scheduled at the exact time the user is scheduling the meeting.
+* If there is a meeting that starts or ends right at the time the user needs to schedule.
+* If there is already a meeting, and the user enters a date range shorter than the duration of the scheduled session.
